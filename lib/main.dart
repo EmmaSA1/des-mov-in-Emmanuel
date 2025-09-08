@@ -70,21 +70,22 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
- void _descrumCounter() {
-  if (_counter > 0) {
-    setState(() {
-      _counter--;
-    });
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("El contador no puede ser negativo."),
-        duration: Duration(seconds: 2),
-      ),
-    );
+  void _descrumCounter() {
+    if (_counter > 0) {
+      setState(() {
+        _counter--;
+      });
+      print("Contador actualizado: $_counter");
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("El contador no puede ser negativo."),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      print("Intento de decrementar por debajo de 0");
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
