@@ -34,12 +34,14 @@ class _MyHomePageState extends State<MyHomePage> {
   int age = 21;
   bool programming = true;
 
-  // Ahora usamos lista de Students en lugar de strings
   final List<Student> studentList = [];
   final Student student1 = Student("Emmanuel", "12345");
 
   final TextEditingController _txtNameCTRL = TextEditingController();
-  final TextEditingController _txtIdCTRL = TextEditingController(); // cambiado el nombre
+  final TextEditingController _txtIdCTRL = TextEditingController();
+
+  // clave del formulario
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _incrementCounter() {
     setState(() {
@@ -54,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _counter--;
       });
-      print("Contador actualizado: $_counter");
     }
   }
 
@@ -71,15 +72,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _addStudent() {
+    // validar campos
+    if (!_formKey.currentState!.validate()) return;
+
     final name = _txtNameCTRL.text.trim();
     final studentId = _txtIdCTRL.text.trim();
-
-    if (name.isEmpty || studentId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("El nombre y el ID no pueden estar vacíos")),
-      );
-      return;
-    }
 
     setState(() {
       studentList.add(Student(name, studentId));
@@ -124,51 +121,66 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: SingleChildScrollView( // para evitar overflow
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text('You have pushed the button this many times:'),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: TextField(
-                  controller: _txtNameCTRL,
-                  decoration: const InputDecoration(
-                    labelText: "Name:",
-                    border: OutlineInputBorder(),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey, // se usa el form
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text('You have pushed the button this many times:'),
+                Text(
+                  '$_counter',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: TextFormField(
+                    controller: _txtNameCTRL,
+                    decoration: const InputDecoration(
+                      labelText: "Name:",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "El nombre no puede estar vacío";
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: TextField(
-                  controller: _txtIdCTRL,
-                  decoration: const InputDecoration(
-                    labelText: "Student Id:",
-                    border: OutlineInputBorder(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: TextFormField(
+                    controller: _txtIdCTRL,
+                    decoration: const InputDecoration(
+                      labelText: "Student Id:",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "El ID no puede estar vacío";
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: ElevatedButton(
-                  onPressed: _addStudent,
-                  child: const Text("Add Student"),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: ElevatedButton(
+                    onPressed: _addStudent,
+                    child: const Text("Add Student"),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 15),
-              Text('Nombre: $name'),
-              Text('Edad: $age'),
-              Text('¿Soy bueno para la chamba? $programming'),
-              const SizedBox(height: 15),
-              Text("Original Student: ${student1.name}"),
-              Text("Her Student Id is: ${student1.studentId}"),
-              _getAllStudents(),
-            ],
+                const SizedBox(height: 15),
+                Text('Nombre: $name'),
+                Text('Edad: $age'),
+                Text('¿Soy bueno para la chamba? $programming'),
+                const SizedBox(height: 15),
+                Text("Original Student: ${student1.name}"),
+                Text("Her Student Id is: ${student1.studentId}"),
+                _getAllStudents(),
+              ],
+            ),
           ),
         ),
       ),
